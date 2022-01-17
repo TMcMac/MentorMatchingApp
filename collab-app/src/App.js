@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
-import themeFile from './utils/theme';
+import { themeFile } from './utils/theme';
 import jwtDecode from 'jwt-decode';
 
 //Components
@@ -38,9 +38,8 @@ class App extends Component {
           <Navbar/>
           <div className='container'> 
             <Routes>
-              <Route exact path="/" element={ <Home/> }/>
+              <Route path="/" element={ <Home/> }/>
               <Route
-                exact
                 path="/login"
                 element={
                   <AuthRoute>
@@ -50,7 +49,6 @@ class App extends Component {
                 authenticated={authenticated}
               />
               <Route
-                exact
                 path="/signup"
                 element={
                   <AuthRoute>
