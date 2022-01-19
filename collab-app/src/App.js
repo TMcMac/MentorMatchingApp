@@ -6,6 +6,10 @@ import { createTheme } from '@mui/material/styles';
 import { themeFile } from './utils/theme';
 import jwtDecode from 'jwt-decode';
 
+//redux
+import { Provider } from 'react-redux';
+import store from './redux/store';
+
 //Components
 import Navbar from './components/navbar';
 import AuthRoute from './utils/AuthRoute';
@@ -33,7 +37,7 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={theme}>
-        <div className="App">
+      <Provider store={store}>
         <BrowserRouter>
           <Navbar/>
           <div className='container'> 
@@ -60,7 +64,7 @@ class App extends Component {
             </Routes>
           </div>
         </BrowserRouter>
-        </div>
+      </Provider>
       </ThemeProvider>
     );
   }
