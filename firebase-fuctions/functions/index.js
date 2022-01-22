@@ -31,18 +31,29 @@ app.post("/signup", async (req, res) => {
   }
 
   // Create user
-  await admin.auth().createUser({ email: newUser.email, password: newUser.password })
-  return res.json({ data: "User created" });
+  await admin.auth().createUser({ 
+    email: newUser.email, 
+    password: newUser.password,
+    emailVerified: false,
+    disabled: false 
+  })
+  .then((userRecord) => {
+    // Add User to Users Collection
+    const userCredentials = {
+        handle: newUser.handle,
+        email: newUser.email,
+        createdAt: new Date().toISOString(),
+        userId: userRecord.uid
+    };
+    return db.doc(`/users/${newUser.handle}`).set(userCredentials)
+  })
+  
 
   // TODO SignIn User
-  
-  // TODO Add User to Users Collection
-//   const userCredentials = {
-//     userHandle = newUser.handle,
-//     email = newUser.email,
-//     createdAt = new Date().toISOString(),
-//     userId = userDoc.uid
-//   }
+
+
+// , uid: `${newUserId}` 
+  return res.json({ data: "User created"});
 })
 
 
