@@ -1,4 +1,4 @@
-const { db } = require('../util/admin');
+const { admin, db } = require('../util/admin');
 const firebase = require('firebase');
 
 const config = require('../util/config');
@@ -18,6 +18,7 @@ exports.signup = async (req, res) => {
     const { valid, errors } = validateSignupData(newUser);
 
     if(!valid) return res.status(400).json(errors);
+    const noImg = 'no-img.png';
   
     const userDoc = await db.doc(`/users/${newUser.handle}`).get()
     if (userDoc.exists) {
@@ -37,13 +38,14 @@ exports.signup = async (req, res) => {
             handle: newUser.handle,
             email: newUser.email,
             createdAt: new Date().toISOString(),
-            token: uToken,
+            imgURL: `https://firebasetorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
             userId
         };
-        return db.doc(`/users/${newUser.handle}`).set(userCredentials)
+        db.doc(`/users/${newUser.handle}`).set(userCredentials)
+        return userToken
       })
-      .then(() => {
-        return res.status(201).json({message: 'User created successfully'});
+      .then((userToken) => {
+        return res.status(201).json({message: 'User created successfully', token: userToken});
       })
       .catch((err) => {
         console.error(err);
@@ -83,3 +85,51 @@ exports.login = (req, res) => {
       }
     })
 };
+
+exports.uploadImage = (req, res) => {
+    const BusBoy = require('busboy');
+    const path = require('path');
+    const os = require('os');
+    const fs = require('fs');
+
+    const busboy = BusBoy({ headers: req.headers });
+
+    let imageFileName;
+    let imageToBeUploaded = {};
+
+    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+        if(mimetype !== 'image/jpeg' && mimetype !== 'image/png' && mimetype !== 'image/jpg'){
+            return res.status(400).json({error: 'Wrong file type, please use JPG/JPEG/PNG'});
+        }
+        const fileName = filename.filename + '';
+        const imageExtention = fileName.split('.')[fileName.split('.').length - 1];
+        // Not sure why we need to change file name but this is the tutorial recommendation
+        imageFileName = `${Math.round(Math.random() * 10000000000)}.${imageExtention}`;
+        console.log(imageFileName);
+        const filePath = path.join(os.tmpdir(), imageFileName);
+        imageToBeUploaded = {filePath, mimetype};
+        file.pipe(fs.createWriteStream(filePath))
+    });
+    busboy.on('finish', () => {
+        admin.storage().bucket().upload(imageToBeUploaded.filePath, {
+            resumable: false,
+            metadata: {
+                metadata: {
+                    contentType: imageToBeUploaded.mimetype
+                }
+            }
+        })
+        .then( () => {
+            const imgURL = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`
+            return db.doc(`/users/${req.user.handle}`).update({ imgURL });
+        })
+        .then(() => {
+            return res.json({ message: 'Image uploaded successfully'});
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({ error: err.code });
+        })
+    })
+    busboy.end(req.rawBody);
+}

@@ -1,7 +1,7 @@
-const { admin } = require('./admin');
+const { admin, db } = require('./admin');
 
 // Check if user has a token for being logged in
-module.exports = (req, res, next) => {
+module.exports.FBAuth = (req, res, next) => {
     let idToken;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer ')){
       idToken = req.headers.authorization.split('Bearer ')[1];
