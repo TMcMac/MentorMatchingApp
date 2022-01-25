@@ -3,53 +3,31 @@ import axios from 'axios';
 
 export const loginUser = (userData, history) => (dispatch) => {
   dispatch({ type: LOADING_UI });
-  axios.post('/login', userData)
-      .then((res) => {
-        const FBIdToken = `Bearer ${res.data.token}`;
-        localStorage.setItem('FBIdToken', FBIdToken);
-        axios.defaults.headers.common['Authorization'] = FBIdToken;
-        dispatch(getUserData());
-        dispatch({ type: CLEAR_ERRORS});
-        history.push('/');
+  axios
+    .post('/login', userData)
+    .then((res) => {
+      const FireBaseIdToken = `Bearer ${res.data.token}`;
+      localStorage.setItem('FireBaseIdToken', FireBaseIdToken);
+      axios.defaults.headers.common['Authorization'] = FireBaseIdToken;
+      dispatch(getUserData());
+      dispatch({ type: CLEAR_ERRORS});
+      history.push('/');
+    })
+    .catch((err) => {
+      dispatch({
+        type: SET_ERRORS,
+        payload: err.response.data
       })
-      .catch((err) => {
-        dispatch({
-          type: SET_ERRORS,
-          payload: err.response.data
-        });
-      });
-};
-
-export const signupUser = (newUserData, history) => (dispatch) => {
-  dispatch({ type: LOADING_UI}):
-  axios.post('/signup', newUserData)
-      .then((res) => {
-        console.log(res.data);
-        localStorage.setItem('FBIdToken', `Bearer ${res.data.token}`);
-        this.setState({
-          loading: false
-        });
-        axios.defaults.headers.common['Authorization'] = FBIdToken;
-        dispatch(getUserData());
-        dispatch({ type: CLEAR_ERRORS});
-        this.props.history.push('/');
-      })
-      .catch((err) => {
-        dispatch({
-          type: SET_ERRORS,
-          payload: err.response.data
-        });
-      });
-};
+    });
+}
 
 export const getUserData = () => (dispatch) => {
-  dispatch({ type: LOADING_USER});
   axios.get('/user')
   .then((res) => {
     dispatch({
       type: SET_USER,
       payload: res.data
-    });
+    })
   })
-  .catch(err => console.log(err));
-};
+  .catch((err) => console.log(err));
+}

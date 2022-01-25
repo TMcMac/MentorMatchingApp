@@ -15,8 +15,11 @@
     "jwt-decode": "^3.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.1",
     "web-vitals": "^2.1.2"
   },
   "scripts": {
@@ -42,6 +45,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ],
-    "proxy": "https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbnNpV3JJQUtnck5GaFpvalpnNmlrcmFScjg4QXxBQ3Jtc0trTy00eE91cG84bG91bjZ3WVBIZTBuQVlQR283MXJiRjN2SEpxQ3U5cEtMeWxoeV8zY1ZlRVRhREVIY0sxYXp1OS15X3R6ckduZnREdXYzWklCUUVhYk9Cc2Y0MUtVc3FRbTZ1QWNUa3JqejNxanV4VQ&q=https%3A%2F%2Feurope-west1-socialape-d081e.cloudfunctions.net%2Fapi&v=m_u6P5k0vP0"
+    "proxy": "https://us-central1-lxai-mentor-matching.cloudfunctions.net/api"
   }
 }

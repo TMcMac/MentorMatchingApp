@@ -28,18 +28,11 @@ class login extends Component {
       errors: {}
     };
   }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.UI.errors !== prevProps.UI.errors) {
-      this.setState({ errors: this.props.UI.errors })
-    } 
-  }
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (prevState.UI.errors !== nextProps.UI.errors) {
-      return { errors: nextProps.UI.errors};
+  componentDidUpdate(nextProps){
+    if(nextProps.UI.errors) {
+      this.setState({ errors: nextProps.UI.errors });
     }
-    else return null;
   }
-  
   handleSubmit = (event) => {
     event.preventDefault();
     const userData = {
@@ -54,7 +47,7 @@ class login extends Component {
     });
   }
   render() {
-    const { classes, ui: { loading } } = this.props;
+    const { classes, UI: { loading } } = this.props;
     const { errors } = this.state;
     return (
       <Grid container className={classes.form}>
@@ -123,12 +116,12 @@ login.propTypes = {
   classes: PropTypes.object.isRequired,
   loginUser: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
-  ui: PropTypes.object.isRequired
+  UI: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  ui: state.ui
+  UI: state.UI
 });
 
 const mapActionsToProps = {

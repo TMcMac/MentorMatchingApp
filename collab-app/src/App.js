@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
@@ -22,7 +22,7 @@ import Signup from './pages/signup';
 const theme = createTheme(themeFile);
 
 let authenticated = false;
-const token = localStorage.FBIdToken;
+const token = localStorage.FireBaseIdToken;
 if (token) {
   const decodedToken = jwtDecode(token);
   if (decodedToken.exp * 1000 < Date.now()) {
@@ -39,30 +39,32 @@ class App extends Component {
       <ThemeProvider theme={theme}>
       <Provider store={store}>
         <BrowserRouter>
-          <Navbar/>
-          <div className='container'> 
-            <Routes>
-              <Route path="/" element={ <Home/> }/>
-              <Route
-                path="/login"
-                element={
-                  <AuthRoute>
-                    <Login />
-                  </AuthRoute>
-                }
-                authenticated={authenticated}
-              />
-              <Route
-                path="/signup"
-                element={
-                  <AuthRoute>
-                    <Signup />
-                  </AuthRoute>
-                }
-                authenticated={authenticated}
-              />
-            </Routes>
-          </div>
+          <Fragment>
+            <Navbar/>
+            <div className='container'> 
+              <Routes>
+                <Route path="/" element={ <Home/> }/>
+                <Route
+                  path="/login"
+                  element={<AuthRoute/>}>
+                      <Route
+                        path="/login"
+                        element={<Login />}
+                      />
+                  authenticated={authenticated}
+                </Route>
+                <Route
+                  path="/signup"
+                  element={<AuthRoute/>}>
+                      <Route
+                        path="/signup"
+                        element={<Signup />}
+                      />
+                  authenticated={authenticated}
+                </Route>
+              </Routes>
+            </div>
+          </Fragment>
         </BrowserRouter>
       </Provider>
       </ThemeProvider>
