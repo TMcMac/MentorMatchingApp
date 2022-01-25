@@ -4,7 +4,7 @@ const firebase = require('firebase');
 const config = require('../util/config');
 firebase.initializeApp(config);
 
-const { validateSignupData, validateLoginData } = require('../util/validators');
+const { validateSignupData, validateLoginData, reduceUserDetails } = require('../util/validators');
 
 exports.signup = async (req, res) => {
     const newUser = {
@@ -86,6 +86,7 @@ exports.login = (req, res) => {
     })
 };
 
+// Upload an image for user profile page
 exports.uploadImage = (req, res) => {
     const BusBoy = require('busboy');
     const path = require('path');
@@ -132,4 +133,17 @@ exports.uploadImage = (req, res) => {
         })
     })
     busboy.end(req.rawBody);
+}
+
+// Add user details to user collection in db / user profile in react
+exports.addUserDetails = (req, res) => {
+    let userDetails = reduceUserDetails(req.body);
+
+    db.doc(`/users/${req.user.handle}`).update(userDetails)
+    .then(() => {
+        return res.status(200).json({ message: 'Details added successfully' });
+    }).catch(err => {
+        console.error(err);
+        return res.status(500).json({ error: err.code });
+    })
 }
