@@ -28,9 +28,18 @@ class login extends Component {
       errors: {}
     };
   }
-  componentWillRecieveProps(nextProps){
-    
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.UI.errors !== prevProps.UI.errors) {
+      this.setState({ errors: this.props.UI.errors })
+    } 
   }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (prevState.UI.errors !== nextProps.UI.errors) {
+      return { errors: nextProps.UI.errors};
+    }
+    else return null;
+  }
+  
   handleSubmit = (event) => {
     event.preventDefault();
     const userData = {
