@@ -19,41 +19,27 @@ const styles = (theme) => ({
   ...theme.spreadThis
 });
 
-class signup extends Component {
+class login extends Component {
   constructor() {
     super();
     this.state = {
       email: '',
       password: '',
-      confirmPassword: '',
-      handle: '',
-      loading: false,
       errors: {}
-    }
+    };
   }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.UI.errors !== prevProps.UI.errors) {
-      this.setState({ errors: this.props.UI.errors })
-    } 
-  }
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (prevState.UI.errors !== nextProps.UI.errors) {
-      return { errors: nextProps.UI.errors};
+  componentDidUpdate(nextProps){
+    if(nextProps.UI.errors) {
+      this.setState({ errors: nextProps.UI.errors });
     }
-    else return null;
   }
   handleSubmit = (event) => {
     event.preventDefault();
-    this.setState({
-      loading: true
-    });
-    const newUserData = {
+    const userData = {
       email: this.state.email,
-      password: this.state.password,
-      confirmPassword: this.state.confirmPassword,
-      handle: this.state.handle
+      password: this.state.password
     };
-    
+    this.props.loginUser(userData, this.props.history);
   };
   handleChange = (event) => {
     this.setState({
@@ -61,7 +47,7 @@ class signup extends Component {
     });
   }
   render() {
-    const { classes, UI: { loading} } = this.props;
+    const { classes, UI: { loading } } = this.props;
     const { errors } = this.state;
     return (
       <Grid container className={classes.form}>
@@ -69,7 +55,7 @@ class signup extends Component {
         <Grid item sm>
           <img src={LXAIlogo} alt="Logo" className={classes.logoImg}/>
           <Typography variant='h4' className={classes.pageTitle}>
-            Signup
+            Login
           </Typography>
           <form noValidate onSubmit={this.handleSubmit}>
             <TextField
@@ -98,32 +84,6 @@ class signup extends Component {
               onChange={this.handleChange}
               fullWidth
             />
-            <TextField
-              variant="standard"
-              id='confirmPassword'
-              name='confirmPassword'
-              type='password'
-              label='Confirm Password'
-              className={classes.textField}
-              helperText={errors.confirmPassword}
-              error={errors.confirmPassword ? true : false}
-              value={this.state.confirmPassword}
-              onChange={this.handleChange}
-              fullWidth
-            />
-            <TextField
-              variant="standard"
-              id='handle'
-              name='handle'
-              type='text'
-              label='Handle'
-              className={classes.textField}
-              helperText={errors.handle}
-              error={errors.handle ? true : false}
-              value={this.state.handle}
-              onChange={this.handleChange}
-              fullWidth
-            />
             {errors.general && (
               <Typography variant='body2' className={classes.customError}>
                 {errors.general}
@@ -137,31 +97,35 @@ class signup extends Component {
               className={classes.button}
               disabled={loading}
             >
-              Signup
+              Login
               {loading && (
                 <CircularProgress size={30} className={classes.progress}/>
               )}
             </Button>
             <br />
-            <small>already have an account? Login <Link to='/login'>here</Link></small>
+            <small>don't have an account? sign up <Link to='/signup'>here</Link></small>
           </form>    
         </Grid>
         <Grid item sm/>
       </Grid>
-    )
+    );
   }
 }
 
-signup.propTypes = {
+login.propTypes = {
   classes: PropTypes.object.isRequired,
+  loginUser: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
-  UI: PropTypes.object.isRequired,
-  signupUser: PropTypes.func.isRequired,
-}
+  UI: PropTypes.object.isRequired
+};
 
 const mapStateToProps = (state) => ({
   user: state.user,
   UI: state.UI
 });
 
-export default connect(mapStateToProps, { signupUser })(withStyles(styles)(signup));
+const mapActionsToProps = {
+  loginUser
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(login));
